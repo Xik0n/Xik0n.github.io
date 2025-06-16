@@ -26,12 +26,20 @@
             padding-bottom: 80px;
         }
 
+        /* Верхняя панель */
+        .top-bar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            background-color: var(--tg-theme-bg-color);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
         /* Кнопка меню */
         .menu-toggle {
-            position: fixed;
-            top: 12px;
-            left: 12px;
-            z-index: 100;
             display: flex;
             flex-direction: column;
             gap: 4px;
@@ -46,6 +54,12 @@
             background-color: var(--tg-theme-text-color);
         }
 
+        .app-title {
+            margin-left: 12px;
+            font-size: 17px;
+            font-weight: 600;
+        }
+
         /* Боковое меню */
         .side-menu {
             position: fixed;
@@ -56,7 +70,7 @@
             background-color: var(--tg-theme-secondary-bg-color);
             z-index: 99;
             transition: transform 0.3s ease;
-            padding-top: 50px;
+            padding-top: 60px;
         }
 
         .side-menu.active {
@@ -77,7 +91,7 @@
             gap: 8px;
             background-color: var(--tg-theme-secondary-bg-color);
             position: sticky;
-            top: 0;
+            top: 57px; /* Высота top-bar */
             z-index: 99;
             scrollbar-width: none;
         }
@@ -226,18 +240,23 @@
             line-height: 1.5;
         }
 
+        /* Строка с ценой и количеством */
+        .modal-price-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
         .modal-price {
             font-size: 18px;
             font-weight: 600;
-            margin-bottom: 16px;
         }
 
         .modal-controls {
             display: flex;
             align-items: center;
-            justify-content: center;
             gap: 16px;
-            margin-top: 20px;
         }
 
         .modal-quantity-btn {
@@ -421,12 +440,15 @@
     </style>
 </head>
 <body>
-    <!-- Кнопка меню -->
-    <button class="menu-toggle" id="menuToggle">
-        <span class="menu-line"></span>
-        <span class="menu-line"></span>
-        <span class="menu-line"></span>
-    </button>
+    <!-- Верхняя панель с меню -->
+    <div class="top-bar">
+        <button class="menu-toggle" id="menuToggle">
+            <span class="menu-line"></span>
+            <span class="menu-line"></span>
+            <span class="menu-line"></span>
+        </button>
+        <div class="app-title">Cafe Ratel</div>
+    </div>
 
     <!-- Боковое меню -->
     <div class="side-menu" id="sideMenu">
@@ -454,11 +476,15 @@
         </div>
         <img class="modal-image" id="modalProductImage" src="" alt="">
         <div class="modal-description" id="modalProductDescription">Описание товара</div>
-        <div class="modal-price" id="modalProductPrice">0 ₽</div>
-        <div class="modal-controls">
-            <button class="modal-quantity-btn" data-action="decrease">-</button>
-            <div class="modal-quantity-value" id="modalProductQuantity">0</div>
-            <button class="modal-quantity-btn" data-action="increase">+</button>
+        
+        <!-- Строка с ценой и количеством -->
+        <div class="modal-price-row">
+            <div class="modal-price" id="modalProductPrice">0 ₽</div>
+            <div class="modal-controls">
+                <button class="modal-quantity-btn" data-action="decrease">-</button>
+                <div class="modal-quantity-value" id="modalProductQuantity">0</div>
+                <button class="modal-quantity-btn" data-action="increase">+</button>
+            </div>
         </div>
     </div>
 
