@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Кафе Rate!</title>
+    <title>Cafe Rate</title>
     <style>
         :root {
             --tg-theme-bg-color: #ffffff;
-            --tg-theme-secondary-bg-color: #f8f8f8;
+            --tg-theme-secondary-bg-color: #f3f3f3;
             --tg-theme-text-color: #000000;
-            --tg-theme-hint-color: #737373;
+            --tg-theme-hint-color: #707579;
             --tg-theme-link-color: #3390ec;
             --tg-theme-button-color: #3390ec;
             --tg-theme-button-text-color: #ffffff;
@@ -24,14 +24,14 @@
             padding-bottom: 60px;
         }
 
+        /* Шапка */
         .header {
             padding: 12px 16px;
-            background-color: var(--tg-theme-secondary-bg-color);
             text-align: center;
+            background-color: var(--tg-theme-secondary-bg-color);
             position: sticky;
             top: 0;
             z-index: 100;
-            border-bottom: 1px solid #e5e5e5;
         }
 
         .header-title {
@@ -39,15 +39,16 @@
             font-weight: 600;
         }
 
+        /* Блок локации */
         .location {
-            padding: 12px 16px;
+            padding: 8px 16px;
             background-color: var(--tg-theme-secondary-bg-color);
             font-size: 14px;
             color: var(--tg-theme-hint-color);
-            border-bottom: 1px solid #e5e5e5;
         }
 
-        .delivery-options {
+        /* Переключатель доставка/в зале */
+        .delivery-toggle {
             display: flex;
             padding: 8px 16px;
             background-color: var(--tg-theme-secondary-bg-color);
@@ -55,55 +56,59 @@
         }
 
         .delivery-option {
-            padding: 8px 16px;
+            flex: 1;
+            text-align: center;
+            padding: 8px;
             font-size: 14px;
-            margin-right: 10px;
         }
 
         .delivery-option.active {
             font-weight: 600;
-            border-bottom: 2px solid var(--tg-theme-button-color);
+            color: var(--tg-theme-link-color);
+            border-bottom: 2px solid var(--tg-theme-link-color);
         }
 
+        /* Адрес */
         .address {
             padding: 12px 16px;
             font-size: 14px;
             background-color: var(--tg-theme-secondary-bg-color);
-            border-bottom: 1px solid #e5e5e5;
         }
 
+        /* Категории */
         .categories {
             display: flex;
             overflow-x: auto;
             padding: 12px 16px;
+            gap: 8px;
             background-color: var(--tg-theme-secondary-bg-color);
             border-bottom: 1px solid #e5e5e5;
         }
 
         .category {
             padding: 8px 16px;
+            border-radius: 16px;
+            background-color: var(--tg-theme-bg-color);
             font-size: 14px;
             white-space: nowrap;
-            margin-right: 10px;
-            border-radius: 16px;
-            background-color: white;
             border: 1px solid #e5e5e5;
         }
 
         .category.active {
             background-color: var(--tg-theme-button-color);
-            color: white;
+            color: var(--tg-theme-button-text-color);
             border-color: var(--tg-theme-button-color);
         }
 
+        /* Товары */
         .products {
             padding: 16px;
         }
 
         .product-card {
             margin-bottom: 20px;
-            border-bottom: 1px solid #e5e5e5;
             padding-bottom: 16px;
+            border-bottom: 1px solid #f0f0f0;
         }
 
         .product-title {
@@ -115,7 +120,7 @@
         .product-description {
             font-size: 14px;
             color: var(--tg-theme-hint-color);
-            margin-bottom: 8px;
+            margin-bottom: 12px;
         }
 
         .product-footer {
@@ -132,32 +137,34 @@
         .product-controls {
             display: flex;
             align-items: center;
-        }
-
-        .product-quantity {
-            margin: 0 12px;
-            font-size: 16px;
+            gap: 8px;
         }
 
         .product-button {
             width: 28px;
             height: 28px;
-            border-radius: 14px;
+            border-radius: 50%;
             border: 1px solid #e5e5e5;
-            background-color: white;
+            background-color: var(--tg-theme-bg-color);
             font-size: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
+        .product-quantity {
+            min-width: 20px;
+            text-align: center;
+        }
+
+        /* Нижнее меню */
         .bottom-nav {
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
             display: flex;
-            background-color: white;
+            background-color: var(--tg-theme-bg-color);
             border-top: 1px solid #e5e5e5;
             padding: 8px 0;
         }
@@ -170,158 +177,64 @@
         }
 
         .nav-item.active {
-            color: var(--tg-theme-button-color);
+            color: var(--tg-theme-link-color);
         }
 
-        .cart-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: white;
-            z-index: 1000;
-            transform: translateY(100%);
-            transition: transform 0.3s ease;
-            padding-bottom: 60px;
-            overflow-y: auto;
-        }
-
-        .cart-modal.active {
-            transform: translateY(0);
-        }
-
-        .cart-header {
-            padding: 16px;
-            font-size: 18px;
-            font-weight: 600;
-            border-bottom: 1px solid #e5e5e5;
-        }
-
-        .empty-cart {
-            text-align: center;
-            padding: 40px 0;
-            color: var(--tg-theme-hint-color);
-        }
-
-        .cart-item {
-            padding: 16px;
-            border-bottom: 1px solid #e5e5e5;
-        }
-
-        .cart-item-title {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-
-        .cart-item-description {
-            font-size: 14px;
-            color: var(--tg-theme-hint-color);
-            margin-bottom: 8px;
-        }
-
-        .cart-item-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .cart-item-price {
-            font-size: 16px;
-            font-weight: 600;
-        }
-
-        .continue-button {
+        /* Корзина */
+        .cart-panel {
             position: fixed;
             bottom: 60px;
             left: 0;
             right: 0;
-            background-color: var(--tg-theme-button-color);
-            color: white;
-            text-align: center;
-            padding: 16px;
-            font-size: 16px;
-            font-weight: 600;
-        }
-
-        .checkout-section {
-            padding: 16px;
-            border-bottom: 1px solid #e5e5e5;
-        }
-
-        .section-title {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 12px;
-        }
-
-        .payment-option {
-            display: flex;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-
-        .payment-option input {
-            margin-right: 8px;
-        }
-
-        .comment-input {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #e5e5e5;
-            border-radius: 8px;
-            margin-bottom: 16px;
-        }
-
-        .total-section {
-            padding: 16px;
-            border-bottom: 1px solid #e5e5e5;
-        }
-
-        .total-row {
+            background-color: var(--tg-theme-bg-color);
+            padding: 12px 16px;
+            border-top: 1px solid #e5e5e5;
             display: flex;
             justify-content: space-between;
-            margin-bottom: 8px;
+            align-items: center;
         }
 
-        .final-total {
-            font-weight: 600;
+        .cart-total {
             font-size: 16px;
+            font-weight: 600;
         }
 
-        .place-order {
+        .cart-button {
             background-color: var(--tg-theme-button-color);
-            color: white;
-            text-align: center;
-            padding: 16px;
-            font-size: 16px;
-            font-weight: 600;
-            margin: 16px;
+            color: var(--tg-theme-button-text-color);
+            border: none;
             border-radius: 8px;
+            padding: 10px 20px;
+            font-size: 14px;
         }
     </style>
 </head>
 <body>
+    <!-- Шапка -->
     <div class="header">
-        <div class="header-title">Кафе Rate!</div>
+        <div class="header-title">Cafe Rate</div>
     </div>
 
+    <!-- Локация -->
     <div class="location">Москва</div>
 
-    <div class="delivery-options">
+    <!-- Переключатель доставка/в зале -->
+    <div class="delivery-toggle">
         <div class="delivery-option active">Доставка</div>
         <div class="delivery-option">В зале</div>
     </div>
 
+    <!-- Адрес -->
     <div class="address">Россия, Москва, улица Барклая, 8</div>
 
+    <!-- Категории -->
     <div class="categories">
         <div class="category active">Фреш,Коктейли</div>
         <div class="category">Бургеры halal</div>
         <div class="category">Кесадилья</div>
     </div>
 
+    <!-- Товары -->
     <div class="products">
         <div class="product-card">
             <div class="product-title">Баббл кофе с сырной пенкой</div>
@@ -350,69 +263,61 @@
         </div>
     </div>
 
+    <!-- Панель корзины -->
+    <div class="cart-panel">
+        <div class="cart-total">Итого: 850,00 ₽</div>
+        <button class="cart-button">Корзина</button>
+    </div>
+
+    <!-- Нижнее меню -->
     <div class="bottom-nav">
         <div class="nav-item active">Меню</div>
         <div class="nav-item">Корзина</div>
         <div class="nav-item">Мой профиль</div>
     </div>
 
-    <div class="cart-modal" id="cartModal">
-        <div class="cart-header">Корзина</div>
-        
-        <div class="cart-item">
-            <div class="cart-item-title">Баббл кофе с сырной пенкой</div>
-            <div class="cart-item-description">эспрессо, молоко, лед тапиока, сырная пенка, шоколад тростниковый сахар</div>
-            <div class="cart-item-footer">
-                <div class="cart-item-price">500,00 ₽</div>
-                <div class="product-controls">
-                    <button class="product-button">-</button>
-                    <div class="product-quantity">1</div>
-                    <button class="product-button">+</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="cart-item">
-            <div class="cart-item-title">Апельсиновый фреш со льдом 0,65 мл</div>
-            <div class="cart-item-description">Свежевыжатый апельсиновый сок со льдом большой стакан 0,65 мл</div>
-            <div class="cart-item-footer">
-                <div class="cart-item-price">350,00 ₽</div>
-                <div class="product-controls">
-                    <button class="product-button">-</button>
-                    <div class="product-quantity">1</div>
-                    <button class="product-button">+</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="continue-button">Продолжить</div>
-    </div>
-
     <script>
-        // Здесь будет JavaScript для работы с корзиной и навигацией
+        // Базовая логика
         document.addEventListener('DOMContentLoaded', function() {
-            // Переключение между меню и корзиной
-            const navItems = document.querySelectorAll('.nav-item');
-            const productsSection = document.querySelector('.products');
-            const cartModal = document.getElementById('cartModal');
-
-            navItems.forEach(item => {
-                item.addEventListener('click', function() {
-                    navItems.forEach(i => i.classList.remove('active'));
+            // Переключение категорий
+            const categories = document.querySelectorAll('.category');
+            categories.forEach(cat => {
+                cat.addEventListener('click', function() {
+                    categories.forEach(c => c.classList.remove('active'));
                     this.classList.add('active');
-
-                    if (this.textContent === 'Корзина') {
-                        cartModal.classList.add('active');
-                        productsSection.style.display = 'none';
-                    } else {
-                        cartModal.classList.remove('active');
-                        productsSection.style.display = 'block';
-                    }
                 });
             });
 
-            // Здесь можно добавить логику для работы с корзиной
-            // Добавление/удаление товаров, подсчет суммы и т.д.
+            // Переключение доставка/в зале
+            const deliveryOptions = document.querySelectorAll('.delivery-option');
+            deliveryOptions.forEach(opt => {
+                opt.addEventListener('click', function() {
+                    deliveryOptions.forEach(o => o.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+
+            // Управление количеством товаров
+            const minusButtons = document.querySelectorAll('.product-button:first-child');
+            const plusButtons = document.querySelectorAll('.product-button:last-child');
+            
+            minusButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const quantity = this.nextElementSibling;
+                    let value = parseInt(quantity.textContent) || 0;
+                    if (value > 0) value--;
+                    quantity.textContent = value || '';
+                });
+            });
+            
+            plusButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const quantity = this.previousElementSibling;
+                    let value = parseInt(quantity.textContent) || 0;
+                    value++;
+                    quantity.textContent = value;
+                });
+            });
         });
     </script>
 </body>
