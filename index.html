@@ -6,13 +6,13 @@
     <title>Cafe Ratel</title>
     <style>
         :root {
-            --tg-theme-bg-color: #efeff3;
-            --tg-theme-button-color: #63d0f9;
-            --tg-theme-button-text-color: #000000;
+            --tg-theme-bg-color: #f5f5f5;
             --tg-theme-secondary-bg-color: #ffffff;
             --tg-theme-text-color: #000000;
             --tg-theme-hint-color: #707579;
-            --tg-theme-link-color: #007aff;
+            --tg-theme-link-color: #3390ec;
+            --tg-theme-button-color: #3390ec;
+            --tg-theme-button-text-color: #ffffff;
         }
 
         body {
@@ -21,24 +21,19 @@
             padding: 0;
             background-color: var(--tg-theme-bg-color);
             color: var(--tg-theme-text-color);
-        }
-
-        .container {
-            max-width: 100%;
-            padding: 0 16px;
-            margin: 0 auto;
+            line-height: 1.4;
         }
 
         .header {
             padding: 12px 16px;
             background-color: var(--tg-theme-secondary-bg-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             position: sticky;
             top: 0;
             z-index: 100;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
         }
 
         .header-title {
@@ -51,25 +46,18 @@
             color: var(--tg-theme-button-text-color);
             border: none;
             border-radius: 10px;
-            padding: 6px 12px;
+            padding: 8px 12px;
             font-size: 15px;
             font-weight: 500;
             display: flex;
             align-items: center;
-            gap: 4px;
-        }
-
-        .cart-count {
-            background-color: rgba(0, 0, 0, 0.1);
-            border-radius: 10px;
-            padding: 2px 6px;
-            font-size: 13px;
+            gap: 6px;
         }
 
         .categories {
             display: flex;
             overflow-x: auto;
-            padding: 12px 0;
+            padding: 12px 16px;
             gap: 8px;
             background-color: var(--tg-theme-secondary-bg-color);
             position: sticky;
@@ -96,7 +84,7 @@
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 12px;
-            padding: 16px 0;
+            padding: 16px;
         }
 
         .product-card {
@@ -118,7 +106,7 @@
 
         .product-title {
             font-size: 15px;
-            font-weight: 500;
+            font-weight: 600;
             margin-bottom: 4px;
         }
 
@@ -130,6 +118,7 @@
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
+            line-clamp: 2;
         }
 
         .product-footer {
@@ -141,6 +130,7 @@
         .product-price {
             font-size: 15px;
             font-weight: 600;
+            color: var(--tg-theme-text-color);
         }
 
         .product-add {
@@ -153,7 +143,45 @@
             font-weight: 500;
         }
 
-        .cart {
+        .cart-panel {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: var(--tg-theme-secondary-bg-color);
+            padding: 12px 16px;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .cart-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .cart-label {
+            font-size: 13px;
+            color: var(--tg-theme-hint-color);
+        }
+
+        .cart-total {
+            font-size: 17px;
+            font-weight: 600;
+        }
+
+        .cart-open {
+            background-color: var(--tg-theme-button-color);
+            color: var(--tg-theme-button-text-color);
+            border: none;
+            border-radius: 10px;
+            padding: 10px 16px;
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .cart-modal {
             position: fixed;
             top: 0;
             left: 0;
@@ -167,7 +195,7 @@
             flex-direction: column;
         }
 
-        .cart.active {
+        .cart-modal.active {
             transform: translateY(0);
         }
 
@@ -219,7 +247,7 @@
 
         .cart-item-title {
             font-size: 15px;
-            font-weight: 500;
+            font-weight: 600;
             margin-bottom: 4px;
         }
 
@@ -236,19 +264,13 @@
             margin-top: 8px;
         }
 
-        .cart-item-count {
-            font-size: 15px;
-            min-width: 20px;
-            text-align: center;
-        }
-
         .cart-item-button {
             background-color: var(--tg-theme-button-color);
             color: var(--tg-theme-button-text-color);
             border: none;
             border-radius: 6px;
-            width: 24px;
-            height: 24px;
+            width: 28px;
+            height: 28px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -256,17 +278,15 @@
             font-weight: 500;
         }
 
+        .cart-item-count {
+            font-size: 15px;
+            min-width: 20px;
+            text-align: center;
+        }
+
         .cart-footer {
             padding: 16px;
             border-top: 1px solid rgba(0, 0, 0, 0.1);
-        }
-
-        .cart-total {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 16px;
-            font-size: 17px;
-            font-weight: 600;
         }
 
         .cart-address {
@@ -298,43 +318,45 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <div class="header-title">Cafe Ratel</div>
-            <button class="cart-button" id="cartButton">
-                Корзина <span class="cart-count" id="cartCount">0</span>
-            </button>
-        </div>
-
-        <div class="categories" id="categories">
-            <!-- Categories will be added here dynamically -->
-        </div>
-
-        <div class="products" id="products">
-            <!-- Products will be added here dynamically -->
-        </div>
+    <div class="header">
+        <div class="header-title">Cafe Ratel</div>
+        <button class="cart-button" id="cartButton">
+            <span id="cartCount">0</span>
+        </button>
     </div>
 
-    <div class="cart" id="cart">
+    <div class="categories" id="categories">
+        <!-- Категории будут добавлены динамически -->
+    </div>
+
+    <div class="products" id="products">
+        <!-- Товары будут добавлены динамически -->
+    </div>
+
+    <div class="cart-panel">
+        <div class="cart-info">
+            <div class="cart-label">Корзина</div>
+            <div class="cart-total" id="cartTotal">0 ₽</div>
+        </div>
+        <button class="cart-open" id="cartOpen">Открыть</button>
+    </div>
+
+    <div class="cart-modal" id="cartModal">
         <div class="cart-header">
             <div class="cart-title">Корзина</div>
             <button class="cart-close" id="cartClose">Готово</button>
         </div>
         <div class="cart-items" id="cartItems">
-            <!-- Cart items will be added here dynamically -->
+            <!-- Товары в корзине будут добавлены динамически -->
         </div>
         <div class="cart-footer">
-            <div class="cart-total">
-                <span>Итого:</span>
-                <span id="cartTotal">0 ₽</span>
-            </div>
             <input type="text" class="cart-address" id="cartAddress" placeholder="Адрес доставки" required>
             <button class="cart-submit" id="cartSubmit">Оформить заказ</button>
         </div>
     </div>
 
     <script>
-        // Sample data - replace with your actual products
+        // Данные продуктов
         const productsData = {
             "Горячие блюда": [
                 {
@@ -396,50 +418,28 @@
                     description: "Классический безалкогольный мохито",
                     price: 350,
                     image: "https://img.freepik.com/free-photo/glass-mojito-with-lime-mint-leaves_140725-1016.jpg"
-                },
-                {
-                    id: 9,
-                    name: "Капучино",
-                    description: "Ароматный кофе с молочной пенкой",
-                    price: 300,
-                    image: "https://img.freepik.com/free-photo/cup-coffee-with-heart-drawn-foam_1286-100.jpg"
-                }
-            ],
-            "Десерты": [
-                {
-                    id: 10,
-                    name: "Тирамису",
-                    description: "Классический итальянский десерт",
-                    price: 400,
-                    image: "https://img.freepik.com/free-photo/delicious-tiramisu-cake_144627-17858.jpg"
-                },
-                {
-                    id: 11,
-                    name: "Чизкейк",
-                    description: "Нежный чизкейк с ягодным топпингом",
-                    price: 350,
-                    image: "https://img.freepik.com/free-photo/slice-cheesecake-with-berries_144627-23741.jpg"
                 }
             ]
         };
 
-        // Initialize the app
+        // Инициализация приложения
         document.addEventListener('DOMContentLoaded', () => {
             const categoriesContainer = document.getElementById('categories');
             const productsContainer = document.getElementById('products');
             const cartButton = document.getElementById('cartButton');
             const cartCount = document.getElementById('cartCount');
-            const cart = document.getElementById('cart');
+            const cartTotal = document.getElementById('cartTotal');
+            const cartOpen = document.getElementById('cartOpen');
+            const cartModal = document.getElementById('cartModal');
             const cartClose = document.getElementById('cartClose');
             const cartItems = document.getElementById('cartItems');
-            const cartTotal = document.getElementById('cartTotal');
             const cartAddress = document.getElementById('cartAddress');
             const cartSubmit = document.getElementById('cartSubmit');
 
             let cartData = [];
             let currentCategory = Object.keys(productsData)[0];
 
-            // Render categories
+            // Отображение категорий
             Object.keys(productsData).forEach(category => {
                 const categoryElement = document.createElement('div');
                 categoryElement.className = `category ${category === currentCategory ? 'active' : ''}`;
@@ -455,7 +455,7 @@
                 categoriesContainer.appendChild(categoryElement);
             });
 
-            // Render products
+            // Отображение товаров
             function renderProducts() {
                 productsContainer.innerHTML = '';
                 productsData[currentCategory].forEach(product => {
@@ -475,7 +475,7 @@
                     productsContainer.appendChild(productElement);
                 });
 
-                // Add event listeners to add buttons
+                // Обработчики для кнопок добавления
                 document.querySelectorAll('.product-add').forEach(button => {
                     button.addEventListener('click', (e) => {
                         const productId = parseInt(e.target.getAttribute('data-id'));
@@ -484,11 +484,11 @@
                 });
             }
 
-            // Add product to cart
+            // Добавление в корзину
             function addToCart(productId) {
                 let product;
                 
-                // Find product in all categories
+                // Поиск товара по всем категориям
                 for (const category of Object.keys(productsData)) {
                     product = productsData[category].find(p => p.id === productId);
                     if (product) break;
@@ -512,29 +512,29 @@
                 updateCart();
             }
 
-            // Update cart UI
+            // Обновление корзины
             function updateCart() {
-                cartCount.textContent = cartData.reduce((sum, item) => sum + item.quantity, 0);
+                const totalCount = cartData.reduce((sum, item) => sum + item.quantity, 0);
+                const totalPrice = cartData.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                
+                cartCount.textContent = totalCount;
+                cartTotal.textContent = `${totalPrice} ₽`;
                 
                 if (cartData.length === 0) {
                     cartItems.innerHTML = '<div class="empty-cart">Корзина пуста</div>';
-                    cartTotal.textContent = '0 ₽';
                     return;
                 }
 
                 cartItems.innerHTML = '';
-                let total = 0;
 
                 cartData.forEach(item => {
-                    total += item.price * item.quantity;
-                    
                     const itemElement = document.createElement('div');
                     itemElement.className = 'cart-item';
                     itemElement.innerHTML = `
                         <img src="${item.image}" class="cart-item-image" alt="${item.name}">
                         <div class="cart-item-info">
                             <div class="cart-item-title">${item.name}</div>
-                            <div class="cart-item-price">${item.price} ₽</div>
+                            <div class="cart-item-price">${item.price * item.quantity} ₽</div>
                             <div class="cart-item-controls">
                                 <button class="cart-item-button" data-id="${item.id}" data-action="decrease">-</button>
                                 <div class="cart-item-count">${item.quantity}</div>
@@ -545,9 +545,7 @@
                     cartItems.appendChild(itemElement);
                 });
 
-                cartTotal.textContent = `${total} ₽`;
-
-                // Add event listeners to cart item buttons
+                // Обработчики для кнопок управления количеством
                 document.querySelectorAll('.cart-item-button').forEach(button => {
                     button.addEventListener('click', (e) => {
                         const productId = parseInt(e.target.getAttribute('data-id'));
@@ -557,7 +555,7 @@
                 });
             }
 
-            // Update cart item quantity
+            // Обновление количества товара в корзине
             function updateCartItem(productId, action) {
                 const item = cartData.find(item => item.id === productId);
                 if (!item) return;
@@ -574,16 +572,20 @@
                 updateCart();
             }
 
-            // Toggle cart
-            cartButton.addEventListener('click', () => {
-                cart.classList.add('active');
+            // Открытие/закрытие корзины
+            cartOpen.addEventListener('click', () => {
+                cartModal.classList.add('active');
             });
 
             cartClose.addEventListener('click', () => {
-                cart.classList.remove('active');
+                cartModal.classList.remove('active');
             });
 
-            // Submit order
+            cartButton.addEventListener('click', () => {
+                cartModal.classList.add('active');
+            });
+
+            // Оформление заказа
             cartSubmit.addEventListener('click', () => {
                 if (cartData.length === 0) {
                     alert('Корзина пуста');
@@ -604,25 +606,25 @@
                     address: cartAddress.value.trim()
                 };
 
-                // Send data to Telegram bot
+                // Отправка данных в Telegram бот
                 if (window.Telegram && window.Telegram.WebApp) {
                     window.Telegram.WebApp.sendData(JSON.stringify(orderData));
                 } else {
-                    // For testing outside Telegram
+                    // Для тестирования вне Telegram
                     console.log('Order data:', orderData);
                     alert('Заказ оформлен! (в реальном боте данные были бы отправлены)');
                     cartData = [];
                     cartAddress.value = '';
                     updateCart();
-                    cart.classList.remove('active');
+                    cartModal.classList.remove('active');
                 }
             });
 
-            // Initialize
+            // Инициализация
             renderProducts();
             updateCart();
 
-            // Handle Telegram WebApp ready event
+            // Обработчик WebApp Telegram
             if (window.Telegram && window.Telegram.WebApp) {
                 window.Telegram.WebApp.expand();
                 window.Telegram.WebApp.MainButton.hide();
