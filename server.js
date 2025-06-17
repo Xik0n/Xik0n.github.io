@@ -45,9 +45,6 @@ app.post('/api/save', (req, res) => {
     }
 });
 
-// Остальные API обработчики (изменение категории, товара и т.д.)
-// ... (ваши существующие эндпоинты) ...
-
 // Обслуживание админ-панели
 app.get('/admin', (req, res) => {
     res.sendFile(path.join(__dirname, 'admin.html'));
@@ -56,5 +53,4 @@ app.get('/admin', (req, res) => {
 // Запуск сервера
 app.listen(PORT, () => {
     console.log(`Сервер запущен на порту ${PORT}`);
-    console.log(`Админ-панель: http://localhost:${PORT}/admin`);
 });
