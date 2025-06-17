@@ -1,12 +1,6 @@
 {
+  "123123": [],
   "Колбаски": [
-    {
-      "id": 1,
-      "name": "Баварские колбаски",
-      "description": "Сочные свиные колбаски с горчицей и зеленью.",
-      "price": 650,
-      "image": "https://avatars.dzeninfra.ru/get-zen_doc/271828/pub_666fba99a362a077db1d0ed0_666fbcb6b275780290668a93/scale_1200"
-    },
     {
       "id": 2,
       "name": "Охотничьи колбаски",
@@ -66,6 +60,15 @@
       "description": "Традиционный кисломолочный напиток, подается охлаждённым.",
       "price": 180,
       "image": "https://avatars.mds.yandex.net/i?id=1386f1e79a987e09e8969dd782617c17_l-4688954-images-thumbs&n=13"
+    }
+  ],
+  "Сыры": [
+    {
+      "id": 1,
+      "name": "Сыр Чеддер",
+      "description": "Сыр чеддер самый вкусный",
+      "price": 3000,
+      "image": "https://avatars.mds.yandex.net/i?id=a33f6d0fbc18b59946aea025d07aed01_l-9266608-images-thumbs&n=13"
     }
   ]
 }
