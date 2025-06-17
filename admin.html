@@ -996,25 +996,6 @@
         
         // Настройка обработчиков событий
         function setupEventListeners() {
-
-            document.getElementById('reloadDataBtn').addEventListener('click', async () => {
-                try {
-                    const response = await fetch('products.json');
-                    if (!response.ok) throw new Error('Network response was not ok');
-                    appState.categories = await response.json();
-                    saveToLocalStorage();
-                    renderCategories();
-                    
-                    // Выбираем первую категорию
-                    const firstCategory = Object.keys(appState.categories)[0];
-                    if (firstCategory) selectCategory(firstCategory);
-                    
-                    showNotification('Данные успешно обновлены', 'success');
-                } catch (error) {
-                    console.error('Ошибка загрузки products.json:', error);
-                    showNotification('Ошибка обновления данных', 'error');
-                }
-            });
             // Кнопка добавления категории
             elements.addCategoryBtn.addEventListener('click', () => openCategoryModal());
             
