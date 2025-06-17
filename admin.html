@@ -76,42 +76,46 @@
             padding: 25px;
             box-shadow: var(--shadow);
         }
-        
+                        
         .section-title {
             display: flex;
-            justify-content: space-between;
+            justify-content: space-between; /* ← кнопка строго вправо */
             align-items: center;
+            padding: 0 20px 15px 20px; /* ← внутренние отступы */
             margin-bottom: 20px;
-            padding: 0 15px 15px;
             border-bottom: 2px solid var(--light);
+            margin-left: -25px;
         }
-        
+
         .section-title h2 {
-            font-size: 22px;
-            color: var(--primary);
+            margin: 0;
+            font-size: 20px;
             display: flex;
             align-items: center;
             gap: 10px;
-            margin-right: auto;
+            margin-right: 15px;/* ← вот это гарантирует прижим влево */
         }
-        
+
         .btn {
             background: var(--secondary);
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
+            padding: 6px 14px;
+            border-radius: 6px;
             cursor: pointer;
             font-weight: 600;
+            font-size: 13px;
             transition: all 0.3s ease;
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
+
+            margin-top: 5px; /* ← добавлено */
         }
-        
+
         .btn:hover {
             background: #2980b9;
-            transform: translateY(-2px);
+            transform: translateY(-1px);
         }
         
         .btn-sm {
@@ -391,7 +395,7 @@
                     <path d="M3.375 3C2.339 3 1.5 3.84 1.5 4.875v.75c0 1.036.84 1.875 1.875 1.875h17.25c1.035 0 1.875-.84 1.875-1.875v-.75C22.5 3.839 21.66 3 20.625 3H3.375z"/>
                     <path fill-rule="evenodd" d="M3.087 9l.54 9.176A3 3 0 006.62 21h10.757a3 3 0 002.995-2.824L20.913 9H3.087zm6.163 3.75A.75.75 0 0110 12h4a.75.75 0 010 1.5h-4a.75.75 0 01-.75-.75z" clip-rule="evenodd"/>
                 </svg>
-                Административная панель
+                Админ панель
             </h1>
         </header>
         
