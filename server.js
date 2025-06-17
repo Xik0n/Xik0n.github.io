@@ -8,6 +8,7 @@ const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(bodyParser.json());
+app.use(express.static(__dirname)); // Обслуживаем текущую директорию
 
 // Путь к файлу данных
 const DATA_PATH = path.join(__dirname, 'products.json');
@@ -21,25 +22,39 @@ function writeData(data) {
     fs.writeFileSync(DATA_PATH, JSON.stringify(data, null, 2));
 }
 
-// API Endpoints (оставить как в предыдущем примере)
-// ... [ваши API эндпоинты из предыдущего кода] ...
+// API Endpoints
 
-// Обслуживание статических файлов
-app.use(express.static(__dirname));
-
-// Специальный роут для админ-панели
-app.get('/admin', (req, res) => {
-    res.sendFile(path.join(__dirname, 'admin.html'));
+// Получить все данные
+app.get('/api/products', (req, res) => {
+    try {
+        const data = readData();
+        res.json(data);
+    } catch (error) {
+        res.status(500).json({ error: 'Ошибка чтения данных' });
+    }
 });
 
-// Роут для главной страницы
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
+// Сохранить все данные
+app.post('/api/save', (req, res) => {
+    try {
+        const newData = req.body;
+        writeData(newData);
+        res.json({ message: 'Данные успешно сохранены', data: newData });
+    } catch (error) {
+        res.status(500).json({ error: 'Ошибка сохранения данных' });
+    }
+});
+
+// Остальные API обработчики (изменение категории, товара и т.д.)
+// ... (ваши существующие эндпоинты) ...
+
+// Обслуживание админ-панели
+app.get('/admin', (req, res) => {
+    res.sendFile(path.join(__dirname, 'admin.html'));
 });
 
 // Запуск сервера
 app.listen(PORT, () => {
     console.log(`Сервер запущен на порту ${PORT}`);
     console.log(`Админ-панель: http://localhost:${PORT}/admin`);
-    console.log(`Главная страница: http://localhost:${PORT}`);
 });
