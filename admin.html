@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Админ-панель | Управление товарами</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent: #e74c3c;
+            --success: #27ae60;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+            --gray: #95a5a6;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), #1a2530);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow);
+        }
+        
+        header h1 {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 28px;
+        }
+        
+        header h1 svg {
+            width: 36px;
+            height: 36px;
+        }
+        
+        .content-wrapper {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 25px;
+        }
+        
+        .categories-panel {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+            height: fit-content;
+        }
+        
+        .products-panel {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+        }
+        
+        .section-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--light);
+        }
+        
+        .section-title h2 {
+            font-size: 22px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .btn {
+            background: var(--secondary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+        
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 14px;
+        }
+        
+        .btn-danger {
+            background: var(--accent);
+        }
+        
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+        
+        .btn-success {
+            background: var(--success);
+        }
+        
+        .btn-success:hover {
+            background: #219653;
+        }
+        
+        .category-list {
+            list-style: none;
+        }
+        
+        .category-item {
+            padding: 15px;
+            margin-bottom: 12px;
+            background: var(--light);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .category-item:hover {
+            background: #d6dbdf;
+            transform: translateX(5px);
+        }
+        
+        .category-item.active {
+            background: var(--secondary);
+            color: white;
+            font-weight: bold;
+        }
+        
+        .category-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+        }
+        
+        .product-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border: 1px solid #eee;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .product-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .product-info {
+            padding: 20px;
+        }
+        
+        .product-name {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+        
+        .product-description {
+            color: var(--gray);
+            font-size: 14px;
+            margin-bottom: 15px;
+            height: 60px;
+            overflow: hidden;
+        }
+        
+        .product-price {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--success);
+            margin-bottom: 15px;
+        }
+        
+        .product-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background: white;
+            width: 90%;
+            max-width: 600px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        .modal-header {
+            background: var(--primary);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-body {
+            padding: 25px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border 0.3s ease;
+        }
+        
+        .form-control:focus {
+            border-color: var(--secondary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+        
+        textarea.form-control {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .modal-footer {
+            padding: 20px;
+            background: #f8f9fa;
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+            color: var(--gray);
+        }
+        
+        .empty-state h3 {
+            margin-bottom: 15px;
+            font-size: 22px;
+        }
+        
+        .empty-state p {
+            margin-bottom: 25px;
+            font-size: 16px;
+        }
+        
+        @media (max-width: 900px) {
+            .content-wrapper {
+                grid-template-columns: 1fr;
+            }
+            
+            .products-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+        }
+        
+        @media (max-width: 600px) {
+            .products-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            box-shadow: var(--shadow);
+            z-index: 1100;
+            transform: translateX(200%);
+            transition: transform 0.3s ease;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .notification.success {
+            background: var(--success);
+        }
+        
+        .notification.error {
+            background: var(--accent);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M3.375 3C2.339 3 1.5 3.84 1.5 4.875v.75c0 1.036.84 1.875 1.875 1.875h17.25c1.035 0 1.875-.84 1.875-1.875v-.75C22.5 3.839 21.66 3 20.625 3H3.375z"/>
+                    <path fill-rule="evenodd" d="M3.087 9l.54 9.176A3 3 0 006.62 21h10.757a3 3 0 002.995-2.824L20.913 9H3.087zm6.163 3.75A.75.75 0 0110 12h4a.75.75 0 010 1.5h-4a.75.75 0 01-.75-.75z" clip-rule="evenodd"/>
+                </svg>
+                Админ панель
+            </h1>
+        </header>
+        
+        <div class="content-wrapper">
+            <div class="categories-panel">
+                <div class="section-title">
+                    <h2>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
+                            <path d="M19.5 21a3 3 0 003-3v-4.5a3 3 0 00-3-3h-15a3 3 0 00-3 3V18a3 3 0 003 3h15zM1.5 10.146V6a3 3 0 013-3h5.379a2.25 2.25 0 011.59.659l2.122 2.121c.14.141.331.22.53.22H19.5a3 3 0 013 3v1.146A4.483 4.483 0 0019.5 9h-15a4.483 4.483 0 00-3 1.146z"/>
+                        </svg>
+                        Категории
+                    </h2>
+                    <button class="btn btn-success" id="addCategoryBtn">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+                            <path fill-rule="evenodd" d="M12 3.75a.75.75 0 01.75.75v6.75h6.75a.75.75 0 010 1.5h-6.75v6.75a.75.75 0 01-1.5 0v-6.75H4.5a.75.75 0 010-1.5h6.75V4.5a.75.75 0 01.75-.75z" clip-rule="evenodd"/>
+                        </svg>
+                        Добавить
+                    </button>
+                </div>
+                
+                <ul class="category-list" id="categoryList">
+                    <!-- Категории будут загружены через JS -->
+                </ul>
+            </div>
+            
+            <div class="products-panel">
+                <div class="section-title">
+                    <h2 id="currentCategoryTitle">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
+                            <path d="M2.25 2.25a.75.75 0 000 1.5h1.386c.17 0 .318.114.362.278l2.558 9.592a3.752 3.752 0 00-2.806 3.63c0 .414.336.75.75.75h15.75a.75.75 0 000-1.5H5.378A2.25 2.25 0 017.5 15h11.218a.75.75 0 00.674-.421 60.358 60.358 0 002.96-7.228.75.75 0 00-.525-.965A60.864 60.864 0 005.68 4.509l-.232-.867A1.875 1.875 0 003.636 2.25H2.25zM3.75 20.25a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0zM16.5 20.25a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0z"/>
+                        </svg>
+                        Товары
+                    </h2>
+                    <button class="btn btn-success" id="addProductBtn" disabled>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+                            <path fill-rule="evenodd" d="M12 3.75a.75.75 0 01.75.75v6.75h6.75a.75.75 0 010 1.5h-6.75v6.75a.75.75 0 01-1.5 0v-6.75H4.5a.75.75 0 010-1.5h6.75V4.5a.75.75 0 01.75-.75z" clip-rule="evenodd"/>
+                        </svg>
+                        Добавить товар
+                    </button>
+                </div>
+                
+                <div class="products-grid" id="productsGrid">
+                    <!-- Товары будут загружены через JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Модальное окно для категории -->
+    <div class="modal" id="categoryModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="categoryModalTitle">Добавить категорию</h3>
+                <button class="close-btn" id="closeCategoryModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="categoryName">Название категории</label>
+                    <input type="text" id="categoryName" class="form-control" placeholder="Введите название категории">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" id="cancelCategoryBtn">Отмена</button>
+                <button class="btn btn-success" id="saveCategoryBtn">Сохранить</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Модальное окно для товара -->
+    <div class="modal" id="productModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="productModalTitle">Добавить товар</h3>
+                <button class="close-btn" id="closeProductModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="productName">Название товара</label>
+                    <input type="text" id="productName" class="form-control" placeholder="Введите название товара">
+                </div>
+                <div class="form-group">
+                    <label for="productDescription">Описание</label>
+                    <textarea id="productDescription" class="form-control" placeholder="Введите описание товара"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="productPrice">Цена (руб.)</label>
+                    <input type="number" id="productPrice" class="form-control" placeholder="Введите цену">
+                </div>
+                <div class="form-group">
+                    <label for="productImage">Ссылка на изображение</label>
+                    <input type="text" id="productImage" class="form-control" placeholder="Введите URL изображения">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" id="cancelProductBtn">Отмена</button>
+                <button class="btn btn-success" id="saveProductBtn">Сохранить</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Модальное окно подтверждения удаления -->
+    <div class="modal" id="confirmModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="confirmModalTitle">Подтвердите действие</h3>
+                <button class="close-btn" id="closeConfirmModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="confirmMessage">Вы уверены, что хотите удалить этот элемент?</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" id="cancelConfirmBtn">Отмена</button>
+                <button class="btn btn-danger" id="confirmBtn">Удалить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Уведомления -->
+    <div class="notification" id="notification"></div>
+    
+    <script>
+        // Исходные данные
+        const initialData = {
+            "Колбаски": [
+                {
+                    "id": 1,
+                    "name": "Баварские колбаски",
+                    "description": "Сочные свиные колбаски с горчицей и зеленью.",
+                    "price": 650,
+                    "image": "https://avatars.dzeninfra.ru/get-zen_doc/271828/pub_666fba99a362a077db1d0ed0_666fbcb6b275780290668a93/scale_1200"
+                },
+                {
+                    "id": 2,
+                    "name": "Охотничьи колбаски",
+                    "description": "Копчёные острые колбаски из говядины и свинины.",
+                    "price": 680,
+                    "image": "https://meatinfo.ru/data/tradeboard/426594/tradeboards5k8dL_img.webp"
+                },
+                {
+                    "id": 3,
+                    "name": "Куриные колбаски",
+                    "description": "Куриные колбаски с начинкой из сыра и специй.",
+                    "price": 620,
+                    "image": "https://avatars.mds.yandex.net/i?id=8b76686779f99e5b8d73cf48eba093b5_l-5108022-images-thumbs&n=13"
+                }
+            ],
+            "Салаты": [
+                {
+                    "id": 4,
+                    "name": "Цезарь",
+                    "description": "Классический салат с курицей и соусом Цезарь. Свежие листья салата, крутоны, пармезан.",
+                    "price": 550,
+                    "image": "https://avatars.mds.yandex.net/i?id=c02951d7d7637221c82bc2f89e406b27_l-5221936-images-thumbs&n=13"
+                },
+                {
+                    "id": 5,
+                    "name": "Греческий",
+                    "description": "Свежие овощи, фета, оливки и оливковое масло. Традиционный рецепт средиземноморской кухни.",
+                    "price": 490,
+                    "image": "https://avatars.mds.yandex.net/i?id=c47e50c33ec2747e96db6f232e81052b_l-5232646-images-thumbs&n=13"
+                },
+                {
+                    "id": 6,
+                    "name": "Оливье",
+                    "description": "Оливье — классический салат с варёной колбасой, картофелем, морковью, солёными огурцами, зелёным горошком и майонезом.",
+                    "price": 520,
+                    "image": "https://avatars.mds.yandex.net/i?id=b7b2e5cf0a77f3cc37e8122502b1cdb3_l-5663061-images-thumbs&n=13"
+                }
+            ],
+            "Напитки": [
+                {
+                    "id": 7,
+                    "name": "Лимонад",
+                    "description": "Домашний лимонад с мятой и лаймом. Освежающий напиток с натуральными ингредиентами.",
+                    "price": 250,
+                    "image": "https://i.pinimg.com/originals/8f/93/b8/8f93b83429787cdcefc4f385ab9dd15d.jpg"
+                },
+                {
+                    "id": 8,
+                    "name": "Мохито",
+                    "description": "Классический безалкогольный мохито. Свежая мята, лайм, лед и газированная вода.",
+                    "price": 350,
+                    "image": "https://avatars.mds.yandex.net/i?id=6ab27e8a1ee100e011b2bdafe47115d8_l-5232280-images-thumbs&n=13"
+                },
+                {
+                    "id": 9,
+                    "name": "Айран",
+                    "description": "Традиционный кисломолочный напиток, подается охлаждённым.",
+                    "price": 180,
+                    "image": "https://avatars.mds.yandex.net/i?id=1386f1e79a987e09e8969dd782617c17_l-4688954-images-thumbs&n=13"
+                }
+            ]
+        };
+        
+        // Состояние приложения
+        let appState = {
+            categories: {},
+            currentCategory: null,
+            editingCategory: null,
+            editingProduct: null
+        };
+        
+        // DOM элементы
+        const elements = {
+            categoryList: document.getElementById('categoryList'),
+            productsGrid: document.getElementById('productsGrid'),
+            currentCategoryTitle: document.getElementById('currentCategoryTitle'),
+            addCategoryBtn: document.getElementById('addCategoryBtn'),
+            addProductBtn: document.getElementById('addProductBtn'),
+            
+            // Модальные окна
+            categoryModal: document.getElementById('categoryModal'),
+            productModal: document.getElementById('productModal'),
+            confirmModal: document.getElementById('confirmModal'),
+            
+            // Формы
+            categoryName: document.getElementById('categoryName'),
+            productName: document.getElementById('productName'),
+            productDescription: document.getElementById('productDescription'),
+            productPrice: document.getElementById('productPrice'),
+            productImage: document.getElementById('productImage'),
+            
+            // Кнопки
+            saveCategoryBtn: document.getElementById('saveCategoryBtn'),
+            saveProductBtn: document.getElementById('saveProductBtn'),
+            confirmBtn: document.getElementById('confirmBtn'),
+            
+            // Уведомления
+            notification: document.getElementById('notification')
+        };
+        
+        // Инициализация приложения
+        async function initApp() {
+            // Пытаемся загрузить данные из products.json
+            try {
+                const response = await fetch('products.json');
+                if (!response.ok) throw new Error('Network response was not ok');
+                appState.categories = await response.json();
+                showNotification('Данные успешно загружены', 'success');
+            } catch (error) {
+                console.error('Ошибка загрузки products.json:', error);
+                showNotification('Ошибка загрузки данных. Используются начальные значения', 'error');
+                
+                // Используем начальные данные при ошибке загрузки
+                appState.categories = {
+
+                };
+            }
+            
+            // Сохраняем загруженные данные в localStorage
+            saveToLocalStorage();
+            
+            // Отображение категорий
+            renderCategories();
+            
+            // Выбор первой категории по умолчанию
+            const firstCategory = Object.keys(appState.categories)[0];
+            if (firstCategory) {
+                selectCategory(firstCategory);
+            } else {
+                elements.productsGrid.innerHTML = `
+                    <div class="empty-state">
+                        <h3>Нет доступных товаров</h3>
+                        <p>Добавьте категории и товары для начала работы</p>
+                    </div>
+                `;
+            }
+            
+            // Настройка обработчиков событий
+            setupEventListeners();
+        }
+        
+        // Отображение списка категорий
+        function renderCategories() {
+            elements.categoryList.innerHTML = '';
+            
+            Object.keys(appState.categories).forEach(category => {
+                const li = document.createElement('li');
+                li.className = `category-item ${appState.currentCategory === category ? 'active' : ''}`;
+                li.innerHTML = `
+                    <span>${category}</span>
+                    <div class="category-actions">
+                        <button class="btn btn-sm edit-category" data-category="${category}">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="14" height="14">
+                                <path d="M21.731 2.269a2.625 2.625 0 00-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 000-3.712zM19.513 8.199l-3.712-3.712-8.4 8.4a5.25 5.25 0 00-1.32 2.214l-.8 2.685a.75.75 0 00.933.933l2.685-.8a5.25 5.25 0 002.214-1.32l8.4-8.4z"/>
+                                <path d="M5.25 5.25a3 3 0 00-3 3v10.5a3 3 0 003 3h10.5a3 3 0 003-3V13.5a.75.75 0 00-1.5 0v5.25a1.5 1.5 0 01-1.5 1.5H5.25a1.5 1.5 0 01-1.5-1.5V8.25a1.5 1.5 0 011.5-1.5h5.25a.75.75 0 000-1.5H5.25z"/>
+                            </svg>
+                        </button>
+                        <button class="btn btn-sm btn-danger delete-category" data-category="${category}">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="14" height="14">
+                                <path fill-rule="evenodd" d="M16.5 4.478v.227a48.816 48.816 0 013.878.512.75.75 0 11-.256 1.478l-.209-.035-1.005 13.07a3 3 0 01-2.991 2.77H8.084a3 3 0 01-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 01-.256-1.478A48.567 48.567 0 017.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 013.369 0c1.603.051 2.815 1.387 2.815 2.951zm-6.136-1.452a51.196 51.196 0 013.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 00-6 0v-.113c0-.794.609-1.428 1.364-1.452zm-.355 5.945a.75.75 0 10-1.5.058l.347 9a.75.75 0 101.499-.058l-.346-9zm5.48.058a.75.75 0 10-1.498-.058l-.347 9a.75.75 0 001.5.058l.345-9z" clip-rule="evenodd"/>
+                            </svg>
+                        </button>
+                    </div>
+                `;
+                li.addEventListener('click', () => selectCategory(category));
+                elements.categoryList.appendChild(li);
+            });
+            
+            // Добавляем обработчики для кнопок редактирования и удаления
+            document.querySelectorAll('.edit-category').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const category = btn.dataset.category;
+                    openCategoryModal(category);
+                });
+            });
+            
+            document.querySelectorAll('.delete-category').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const category = btn.dataset.category;
+                    openConfirmModal('category', category);
+                });
+            });
+        }
+        
+        // Выбор категории
+        function selectCategory(category) {
+            appState.currentCategory = category;
+            elements.currentCategoryTitle.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
+                    <path d="M2.25 2.25a.75.75 0 000 1.5h1.386c.17 0 .318.114.362.278l2.558 9.592a3.752 3.752 0 00-2.806 3.63c0 .414.336.75.75.75h15.75a.75.75 0 000-1.5H5.378A2.25 2.25 0 017.5 15h11.218a.75.75 0 00.674-.421 60.358 60.358 0 002.96-7.228.75.75 0 00-.525-.965A60.864 60.864 0 005.68 4.509l-.232-.867A1.875 1.875 0 003.636 2.25H2.25zM3.75 20.25a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0zM16.5 20.25a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0z"/>
+                </svg>
+                Товары: ${category}
+            `;
+            elements.addProductBtn.disabled = false;
+            
+            // Обновляем активный класс у категорий
+            document.querySelectorAll('.category-item').forEach(item => {
+                if (item.querySelector('span').textContent === category) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+            
+            // Отображаем товары выбранной категории
+            renderProducts();
+        }
+        
+        // Отображение товаров
+        function renderProducts() {
+            elements.productsGrid.innerHTML = '';
+            
+            if (!appState.currentCategory) return;
+            
+            const products = appState.categories[appState.currentCategory];
+            
+            if (!products || products.length === 0) {
+                elements.productsGrid.innerHTML = `
+                    <div class="empty-state">
+                        <h3>Товары не найдены</h3>
+                        <p>В этой категории пока нет товаров. Добавьте первый товар.</p>
+                        <button class="btn btn-success" id="addFirstProductBtn">Добавить товар</button>
+                    </div>
+                `;
+                document.getElementById('addFirstProductBtn').addEventListener('click', () => openProductModal());
+                return;
+            }
+            
+            products.forEach(product => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.innerHTML = `
+                    <img src="${product.image}" alt="${product.name}" class="product-image">
+                    <div class="product-info">
+                        <h3 class="product-name">${product.name}</h3>
+                        <p class="product-description">${product.description}</p>
+                        <div class="product-price">${product.price} ₽</div>
+                        <div class="product-actions">
+                            <button class="btn btn-sm edit-product" data-id="${product.id}">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="14" height="14">
+                                    <path d="M21.731 2.269a2.625 2.625 0 00-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 000-3.712zM19.513 8.199l-3.712-3.712-8.4 8.4a5.25 5.25 0 00-1.32 2.214l-.8 2.685a.75.75 0 00.933.933l2.685-.8a5.25 5.25 0 002.214-1.32l8.4-8.4z"/>
+                                    <path d="M5.25 5.25a3 3 0 00-3 3v10.5a3 3 0 003 3h10.5a3 3 0 003-3V13.5a.75.75 0 00-1.5 0v5.25a1.5 1.5 0 01-1.5 1.5H5.25a1.5 1.5 0 01-1.5-1.5V8.25a1.5 1.5 0 011.5-1.5h5.25a.75.75 0 000-1.5H5.25z"/>
+                                </svg>
+                            </button>
+                            <button class="btn btn-sm btn-danger delete-product" data-id="${product.id}">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="14" height="14">
+                                    <path fill-rule="evenodd" d="M16.5 4.478v.227a48.816 48.816 0 013.878.512.75.75 0 11-.256 1.478l-.209-.035-1.005 13.07a3 3 0 01-2.991 2.77H8.084a3 3 0 01-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 01-.256-1.478A48.567 48.567 0 017.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 013.369 0c1.603.051 2.815 1.387 2.815 2.951zm-6.136-1.452a51.196 51.196 0 013.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 00-6 0v-.113c0-.794.609-1.428 1.364-1.452zm-.355 5.945a.75.75 0 10-1.5.058l.347 9a.75.75 0 101.499-.058l-.346-9zm5.48.058a.75.75 0 10-1.498-.058l-.347 9a.75.75 0 001.5.058l.345-9z" clip-rule="evenodd"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                elements.productsGrid.appendChild(card);
+            });
+            
+            // Добавляем обработчики для кнопок редактирования и удаления товаров
+            document.querySelectorAll('.edit-product').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const id = parseInt(btn.dataset.id);
+                    openProductModal(id);
+                });
+            });
+            
+            document.querySelectorAll('.delete-product').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const id = parseInt(btn.dataset.id);
+                    openConfirmModal('product', id);
+                });
+            });
+        }
+        
+        // Открытие модального окна категории
+        function openCategoryModal(category = null) {
+            appState.editingCategory = category;
+            
+            if (category) {
+                document.getElementById('categoryModalTitle').textContent = 'Редактировать категорию';
+                elements.categoryName.value = category;
+            } else {
+                document.getElementById('categoryModalTitle').textContent = 'Добавить категорию';
+                elements.categoryName.value = '';
+            }
+            
+            elements.categoryModal.style.display = 'flex';
+        }
+        
+        // Открытие модального окна товара
+        function openProductModal(productId = null) {
+            appState.editingProduct = productId;
+            
+            if (productId) {
+                document.getElementById('productModalTitle').textContent = 'Редактировать товар';
+                const product = appState.categories[appState.currentCategory].find(p => p.id === productId);
+                if (product) {
+                    elements.productName.value = product.name;
+                    elements.productDescription.value = product.description;
+                    elements.productPrice.value = product.price;
+                    elements.productImage.value = product.image;
+                }
+            } else {
+                document.getElementById('productModalTitle').textContent = 'Добавить товар';
+                elements.productName.value = '';
+                elements.productDescription.value = '';
+                elements.productPrice.value = '';
+                elements.productImage.value = '';
+            }
+            
+            elements.productModal.style.display = 'flex';
+        }
+        
+        // Открытие модального окна подтверждения
+        function openConfirmModal(type, id) {
+            const modal = elements.confirmModal;
+            const message = document.getElementById('confirmMessage');
+            
+            if (type === 'category') {
+                message.textContent = `Вы уверены, что хотите удалить категорию "${id}"? Все товары в этой категории также будут удалены.`;
+            } else if (type === 'product') {
+                const product = appState.categories[appState.currentCategory].find(p => p.id === id);
+                if (product) {
+                    message.textContent = `Вы уверены, что хотите удалить товар "${product.name}"?`;
+                }
+            }
+            
+            elements.confirmBtn.dataset.type = type;
+            elements.confirmBtn.dataset.id = id;
+            modal.style.display = 'flex';
+        }
+        
+        // Сохранение категории
+        function saveCategory() {
+            const name = elements.categoryName.value.trim();
+            
+            if (!name) {
+                showNotification('Введите название категории', 'error');
+                return;
+            }
+            
+            if (appState.editingCategory) {
+                // Редактирование существующей категории
+                if (appState.editingCategory !== name) {
+                    appState.categories[name] = appState.categories[appState.editingCategory];
+                    delete appState.categories[appState.editingCategory];
+                    
+                    if (appState.currentCategory === appState.editingCategory) {
+                        appState.currentCategory = name;
+                    }
+                }
+                showNotification('Категория обновлена успешно', 'success');
+            } else {
+                // Добавление новой категории
+                if (appState.categories[name]) {
+                    showNotification('Категория с таким названием уже существует', 'error');
+                    return;
+                }
+                appState.categories[name] = [];
+                showNotification('Категория добавлена успешно', 'success');
+            }
+            
+            // Сохраняем в localStorage
+            saveToLocalStorage();
+            
+            // Обновляем интерфейс
+            renderCategories();
+            if (!appState.currentCategory) {
+                selectCategory(name);
+            }
+            
+            // Закрываем модальное окно
+            elements.categoryModal.style.display = 'none';
+        }
+        
+        // Сохранение товара
+        function saveProduct() {
+            const name = elements.productName.value.trim();
+            const description = elements.productDescription.value.trim();
+            const price = parseFloat(elements.productPrice.value);
+            const image = elements.productImage.value.trim();
+            
+            // Валидация
+            if (!name) {
+                showNotification('Введите название товара', 'error');
+                return;
+            }
+            if (!description) {
+                showNotification('Введите описание товара', 'error');
+                return;
+            }
+            if (isNaN(price)) {
+                showNotification('Введите корректную цену', 'error');
+                return;
+            }
+            if (!image) {
+                showNotification('Введите URL изображения', 'error');
+                return;
+            }
+            
+            const category = appState.currentCategory;
+            const products = appState.categories[category];
+            
+            if (appState.editingProduct) {
+                // Редактирование существующего товара
+                const index = products.findIndex(p => p.id === appState.editingProduct);
+                if (index !== -1) {
+                    products[index] = {
+                        ...products[index],
+                        name,
+                        description,
+                        price,
+                        image
+                    };
+                }
+                showNotification('Товар обновлен успешно', 'success');
+            } else {
+                // Добавление нового товара
+                // Генерируем уникальный ID
+                const newId = products.length > 0 
+                    ? Math.max(...products.map(p => p.id)) + 1 
+                    : 1;
+                
+                products.push({
+                    id: newId,
+                    name,
+                    description,
+                    price,
+                    image
+                });
+                showNotification('Товар добавлен успешно', 'success');
+            }
+            
+            // Сохраняем в localStorage
+            saveToLocalStorage();
+            
+            // Обновляем интерфейс
+            renderProducts();
+            
+            // Закрываем модальное окно
+            elements.productModal.style.display = 'none';
+        }
+        
+        // Удаление элемента
+        function confirmDelete() {
+            const type = elements.confirmBtn.dataset.type;
+            const id = elements.confirmBtn.dataset.id;
+            
+            if (type === 'category') {
+                // Удаление категории
+                delete appState.categories[id];
+                if (appState.currentCategory === id) {
+                    appState.currentCategory = Object.keys(appState.categories)[0] || null;
+                }
+                showNotification('Категория удалена успешно', 'success');
+            } else if (type === 'product') {
+                // Удаление товара
+                const productId = parseInt(id);
+                const category = appState.currentCategory;
+                appState.categories[category] = appState.categories[category].filter(p => p.id !== productId);
+                showNotification('Товар удален успешно', 'success');
+            }
+            
+            // Сохраняем в localStorage
+            saveToLocalStorage();
+            
+            // Обновляем интерфейс
+            renderCategories();
+            renderProducts();
+            
+            // Закрываем модальное окно
+            elements.confirmModal.style.display = 'none';
+        }
+        
+        // Показать уведомление
+        function showNotification(message, type) {
+            elements.notification.textContent = message;
+            elements.notification.className = `notification ${type} show`;
+            
+            setTimeout(() => {
+                elements.notification.classList.remove('show');
+            }, 3000);
+        }
+        
+        // Сохранение данных в localStorage
+        function saveToLocalStorage() {
+            localStorage.setItem('productsData', JSON.stringify(appState.categories));
+        }
+        
+        // Настройка обработчиков событий
+        function setupEventListeners() {
+
+            document.getElementById('reloadDataBtn').addEventListener('click', async () => {
+                try {
+                    const response = await fetch('products.json');
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    appState.categories = await response.json();
+                    saveToLocalStorage();
+                    renderCategories();
+                    
+                    // Выбираем первую категорию
+                    const firstCategory = Object.keys(appState.categories)[0];
+                    if (firstCategory) selectCategory(firstCategory);
+                    
+                    showNotification('Данные успешно обновлены', 'success');
+                } catch (error) {
+                    console.error('Ошибка загрузки products.json:', error);
+                    showNotification('Ошибка обновления данных', 'error');
+                }
+            });
+            // Кнопка добавления категории
+            elements.addCategoryBtn.addEventListener('click', () => openCategoryModal());
+            
+            // Кнопка добавления товара
+            elements.addProductBtn.addEventListener('click', () => openProductModal());
+            
+            // Кнопки сохранения
+            elements.saveCategoryBtn.addEventListener('click', saveCategory);
+            elements.saveProductBtn.addEventListener('click', saveProduct);
+            elements.confirmBtn.addEventListener('click', confirmDelete);
+            
+            // Кнопки закрытия модальных окон
+            document.getElementById('closeCategoryModal').addEventListener('click', () => {
+                elements.categoryModal.style.display = 'none';
+            });
+            
+            document.getElementById('closeProductModal').addEventListener('click', () => {
+                elements.productModal.style.display = 'none';
+            });
+            
+            document.getElementById('closeConfirmModal').addEventListener('click', () => {
+                elements.confirmModal.style.display = 'none';
+            });
+            
+            // Кнопки отмены
+            document.getElementById('cancelCategoryBtn').addEventListener('click', () => {
+                elements.categoryModal.style.display = 'none';
+            });
+            
+            document.getElementById('cancelProductBtn').addEventListener('click', () => {
+                elements.productModal.style.display = 'none';
+            });
+            
+            document.getElementById('cancelConfirmBtn').addEventListener('click', () => {
+                elements.confirmModal.style.display = 'none';
+            });
+            
+            // Закрытие модальных окон при клике вне области
+            window.addEventListener('click', (e) => {
+                if (e.target === elements.categoryModal) {
+                    elements.categoryModal.style.display = 'none';
+                }
+                if (e.target === elements.productModal) {
+                    elements.productModal.style.display = 'none';
+                }
+                if (e.target === elements.confirmModal) {
+                    elements.confirmModal.style.display = 'none';
+                }
+            });
+        }
+        
+        // Запуск приложения при загрузке страницы
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
