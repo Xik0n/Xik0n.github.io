@@ -82,7 +82,7 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
-            padding-bottom: 15px;
+            padding: 0 15px 15px;
             border-bottom: 2px solid var(--light);
         }
         
@@ -92,6 +92,7 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            margin-right: auto;
         }
         
         .btn {
@@ -364,6 +365,22 @@
         .notification.error {
             background: var(--accent);
         }
+        
+        .save-data-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--success);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 50px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -374,7 +391,7 @@
                     <path d="M3.375 3C2.339 3 1.5 3.84 1.5 4.875v.75c0 1.036.84 1.875 1.875 1.875h17.25c1.035 0 1.875-.84 1.875-1.875v-.75C22.5 3.839 21.66 3 20.625 3H3.375z"/>
                     <path fill-rule="evenodd" d="M3.087 9l.54 9.176A3 3 0 006.62 21h10.757a3 3 0 002.995-2.824L20.913 9H3.087zm6.163 3.75A.75.75 0 0110 12h4a.75.75 0 010 1.5h-4a.75.75 0 01-.75-.75z" clip-rule="evenodd"/>
                 </svg>
-                Админ панель
+                Административная панель
             </h1>
         </header>
         
@@ -491,16 +508,19 @@
             </div>
         </div>
     </div>
-
+    
     <!-- Уведомления -->
     <div class="notification" id="notification"></div>
     
+    <!-- Кнопка для сохранения данных на сервере -->
+    <div class="save-data-btn" id="saveDataBtn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M2 1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H9.5a1 1 0 0 0-1 1v7.293l2.646-2.647a.5.5 0 0 1 .708.708l-3.5 3.5a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L7.5 9.293V2a2 2 0 0 1 2-2H14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h2.5a.5.5 0 0 1 0 1H2z"/>
+        </svg>
+        Сохранить данные на сервере
+    </div>
+    
     <script>
-        // Исходные данные
-        const initialData = {
-
-        };
-        
         // Состояние приложения
         let appState = {
             categories: {},
@@ -516,52 +536,25 @@
             currentCategoryTitle: document.getElementById('currentCategoryTitle'),
             addCategoryBtn: document.getElementById('addCategoryBtn'),
             addProductBtn: document.getElementById('addProductBtn'),
-            
-            // Модальные окна
             categoryModal: document.getElementById('categoryModal'),
             productModal: document.getElementById('productModal'),
             confirmModal: document.getElementById('confirmModal'),
-            
-            // Формы
             categoryName: document.getElementById('categoryName'),
             productName: document.getElementById('productName'),
             productDescription: document.getElementById('productDescription'),
             productPrice: document.getElementById('productPrice'),
             productImage: document.getElementById('productImage'),
-            
-            // Кнопки
             saveCategoryBtn: document.getElementById('saveCategoryBtn'),
             saveProductBtn: document.getElementById('saveProductBtn'),
             confirmBtn: document.getElementById('confirmBtn'),
-            
-            // Уведомления
-            notification: document.getElementById('notification')
+            notification: document.getElementById('notification'),
+            saveDataBtn: document.getElementById('saveDataBtn')
         };
         
         // Инициализация приложения
         async function initApp() {
-            // Пытаемся загрузить данные из localStorage
-            const storedData = localStorage.getItem('productsData');
-            
-            if (storedData) {
-                // Используем сохраненные данные из localStorage
-                appState.categories = JSON.parse(storedData);
-                showNotification('Данные загружены из сохраненной сессии', 'success');
-            } else {
-                try {
-                    // Пытаемся загрузить данные из products.json
-                    const response = await fetch('products.json');
-                    if (!response.ok) throw new Error('Network response was not ok');
-                    appState.categories = await response.json();
-                    showNotification('Данные успешно загружены с сервера', 'success');
-                } catch (error) {
-                    console.error('Ошибка загрузки products.json:', error);
-                    showNotification('Ошибка загрузки данных. Используются начальные значения', 'error');
-                    
-                    // Используем начальные данные при ошибке загрузки
-                    appState.categories = initialData;
-                }
-            }
+            // Загрузка данных с сервера
+            await loadDataFromServer();
             
             // Отображение категорий
             renderCategories();
@@ -581,6 +574,43 @@
             
             // Настройка обработчиков событий
             setupEventListeners();
+        }
+        
+        // Загрузка данных с сервера
+        async function loadDataFromServer() {
+            try {
+                const response = await fetch('/api/products');
+                if (!response.ok) throw new Error('Ошибка загрузки данных');
+                appState.categories = await response.json();
+                showNotification('Данные успешно загружены', 'success');
+            } catch (error) {
+                console.error('Ошибка:', error);
+                showNotification('Ошибка загрузки данных', 'error');
+            }
+        }
+        
+        // Сохранение данных на сервере
+        async function saveDataToServer() {
+            try {
+                const response = await fetch('/api/save', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(appState.categories)
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Ошибка сохранения');
+                }
+                
+                const result = await response.json();
+                showNotification('Данные успешно сохранены на сервере', 'success');
+            } catch (error) {
+                console.error('Ошибка:', error);
+                showNotification(error.message, 'error');
+            }
         }
         
         // Отображение списка категорий
@@ -774,7 +804,7 @@
         }
         
         // Сохранение категории
-        function saveCategory() {
+        async function saveCategory() {
             const name = elements.categoryName.value.trim();
             
             if (!name) {
@@ -803,9 +833,6 @@
                 showNotification('Категория добавлена успешно', 'success');
             }
             
-            // Сохраняем в localStorage
-            saveToLocalStorage();
-            
             // Обновляем интерфейс
             renderCategories();
             if (!appState.currentCategory) {
@@ -817,7 +844,7 @@
         }
         
         // Сохранение товара
-        function saveProduct() {
+        async function saveProduct() {
             const name = elements.productName.value.trim();
             const description = elements.productDescription.value.trim();
             const price = parseFloat(elements.productPrice.value);
@@ -874,9 +901,6 @@
                 showNotification('Товар добавлен успешно', 'success');
             }
             
-            // Сохраняем в localStorage
-            saveToLocalStorage();
-            
             // Обновляем интерфейс
             renderProducts();
             
@@ -904,9 +928,6 @@
                 showNotification('Товар удален успешно', 'success');
             }
             
-            // Сохраняем в localStorage
-            saveToLocalStorage();
-            
             // Обновляем интерфейс
             renderCategories();
             renderProducts();
@@ -925,11 +946,6 @@
             }, 3000);
         }
         
-        // Сохранение данных в localStorage
-        function saveToLocalStorage() {
-            localStorage.setItem('productsData', JSON.stringify(appState.categories));
-        }
-        
         // Настройка обработчиков событий
         function setupEventListeners() {
             // Кнопка добавления категории
@@ -942,6 +958,9 @@
             elements.saveCategoryBtn.addEventListener('click', saveCategory);
             elements.saveProductBtn.addEventListener('click', saveProduct);
             elements.confirmBtn.addEventListener('click', confirmDelete);
+            
+            // Кнопка сохранения данных на сервере
+            elements.saveDataBtn.addEventListener('click', saveDataToServer);
             
             // Кнопки закрытия модальных окон
             document.getElementById('closeCategoryModal').addEventListener('click', () => {
