@@ -498,75 +498,7 @@
     <script>
         // Исходные данные
         const initialData = {
-            "Колбаски": [
-                {
-                    "id": 1,
-                    "name": "Баварские колбаски",
-                    "description": "Сочные свиные колбаски с горчицей и зеленью.",
-                    "price": 650,
-                    "image": "https://avatars.dzeninfra.ru/get-zen_doc/271828/pub_666fba99a362a077db1d0ed0_666fbcb6b275780290668a93/scale_1200"
-                },
-                {
-                    "id": 2,
-                    "name": "Охотничьи колбаски",
-                    "description": "Копчёные острые колбаски из говядины и свинины.",
-                    "price": 680,
-                    "image": "https://meatinfo.ru/data/tradeboard/426594/tradeboards5k8dL_img.webp"
-                },
-                {
-                    "id": 3,
-                    "name": "Куриные колбаски",
-                    "description": "Куриные колбаски с начинкой из сыра и специй.",
-                    "price": 620,
-                    "image": "https://avatars.mds.yandex.net/i?id=8b76686779f99e5b8d73cf48eba093b5_l-5108022-images-thumbs&n=13"
-                }
-            ],
-            "Салаты": [
-                {
-                    "id": 4,
-                    "name": "Цезарь",
-                    "description": "Классический салат с курицей и соусом Цезарь. Свежие листья салата, крутоны, пармезан.",
-                    "price": 550,
-                    "image": "https://avatars.mds.yandex.net/i?id=c02951d7d7637221c82bc2f89e406b27_l-5221936-images-thumbs&n=13"
-                },
-                {
-                    "id": 5,
-                    "name": "Греческий",
-                    "description": "Свежие овощи, фета, оливки и оливковое масло. Традиционный рецепт средиземноморской кухни.",
-                    "price": 490,
-                    "image": "https://avatars.mds.yandex.net/i?id=c47e50c33ec2747e96db6f232e81052b_l-5232646-images-thumbs&n=13"
-                },
-                {
-                    "id": 6,
-                    "name": "Оливье",
-                    "description": "Оливье — классический салат с варёной колбасой, картофелем, морковью, солёными огурцами, зелёным горошком и майонезом.",
-                    "price": 520,
-                    "image": "https://avatars.mds.yandex.net/i?id=b7b2e5cf0a77f3cc37e8122502b1cdb3_l-5663061-images-thumbs&n=13"
-                }
-            ],
-            "Напитки": [
-                {
-                    "id": 7,
-                    "name": "Лимонад",
-                    "description": "Домашний лимонад с мятой и лаймом. Освежающий напиток с натуральными ингредиентами.",
-                    "price": 250,
-                    "image": "https://i.pinimg.com/originals/8f/93/b8/8f93b83429787cdcefc4f385ab9dd15d.jpg"
-                },
-                {
-                    "id": 8,
-                    "name": "Мохито",
-                    "description": "Классический безалкогольный мохито. Свежая мята, лайм, лед и газированная вода.",
-                    "price": 350,
-                    "image": "https://avatars.mds.yandex.net/i?id=6ab27e8a1ee100e011b2bdafe47115d8_l-5232280-images-thumbs&n=13"
-                },
-                {
-                    "id": 9,
-                    "name": "Айран",
-                    "description": "Традиционный кисломолочный напиток, подается охлаждённым.",
-                    "price": 180,
-                    "image": "https://avatars.mds.yandex.net/i?id=1386f1e79a987e09e8969dd782617c17_l-4688954-images-thumbs&n=13"
-                }
-            ]
+
         };
         
         // Состояние приложения
@@ -608,24 +540,28 @@
         
         // Инициализация приложения
         async function initApp() {
-            // Пытаемся загрузить данные из products.json
-            try {
-                const response = await fetch('products.json');
-                if (!response.ok) throw new Error('Network response was not ok');
-                appState.categories = await response.json();
-                showNotification('Данные успешно загружены', 'success');
-            } catch (error) {
-                console.error('Ошибка загрузки products.json:', error);
-                showNotification('Ошибка загрузки данных. Используются начальные значения', 'error');
-                
-                // Используем начальные данные при ошибке загрузки
-                appState.categories = {
-
-                };
-            }
+            // Пытаемся загрузить данные из localStorage
+            const storedData = localStorage.getItem('productsData');
             
-            // Сохраняем загруженные данные в localStorage
-            saveToLocalStorage();
+            if (storedData) {
+                // Используем сохраненные данные из localStorage
+                appState.categories = JSON.parse(storedData);
+                showNotification('Данные загружены из сохраненной сессии', 'success');
+            } else {
+                try {
+                    // Пытаемся загрузить данные из products.json
+                    const response = await fetch('products.json');
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    appState.categories = await response.json();
+                    showNotification('Данные успешно загружены с сервера', 'success');
+                } catch (error) {
+                    console.error('Ошибка загрузки products.json:', error);
+                    showNotification('Ошибка загрузки данных. Используются начальные значения', 'error');
+                    
+                    // Используем начальные данные при ошибке загрузки
+                    appState.categories = initialData;
+                }
+            }
             
             // Отображение категорий
             renderCategories();
